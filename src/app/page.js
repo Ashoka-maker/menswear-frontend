@@ -4,7 +4,7 @@ import Script from 'next/script';
 import Link from 'next/link';
 import { 
   ShoppingBag, ShoppingCart, Star, X, Plus, Trash2, CheckCircle, 
-  Heart, MapPin, ShieldCheck, Truck, RefreshCw, Eye, Phone, Mail, Lock, Instagram 
+  Heart, MapPin, ShieldCheck, Truck, RefreshCw, Eye, Mail, Lock, Instagram 
 } from 'lucide-react';
 
 export default function Home() {
@@ -26,13 +26,9 @@ export default function Home() {
 
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '', pincode: '' });
 
-  // LIVE BACKEND API URL
   const API_BASE_URL = 'https://menswear-backend-f2fo.onrender.com';
-
-  // WHATSAPP NUMBER TO RECEIVE ORDERS
   const ADMIN_WHATSAPP_NUMBER = '919655872121'; 
 
-  // All store categories
   const categories = ['All', 'T-Shirts', 'Shirts', 'Jeans', 'Pants', 'Shorts', 'Jackets', 'Shoes', 'Sleepers', 'Watches', 'Ethnic'];
 
   useEffect(() => {
@@ -481,7 +477,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer with Updated Exact Address & Contact Info */}
+      {/* Footer */}
       <footer className="bg-slate-900 text-white mt-16 py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
