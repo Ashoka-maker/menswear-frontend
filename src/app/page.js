@@ -16,6 +16,13 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // WhatsApp Order Modal State
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [orderSize, setOrderSize] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const [customerName, setCustomerName] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
+
   // Modals State
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isTrackOpen, setIsTrackOpen] = useState(false);
@@ -44,11 +51,21 @@ export default function Home() {
     { name: 'All', icon: Sparkles },
     { name: 'T-Shirts', icon: Shirt },
     { name: 'Shirts', icon: Shirt },
+    { name: 'Jeans', icon: Tag },
+    { name: 'Trousers', icon: Tag },
+    { name: 'Shorts', icon: Tag },
+    { name: 'Jackets', icon: Tag },
+    { name: 'Hoodies', icon: Tag },
     { name: 'Watches', icon: Watch },
     { name: 'Shoes', icon: Tag },
+    { name: 'Innerwear', icon: Tag },
+    { name: 'Belts', icon: Tag },
+    { name: 'Sunglasses', icon: Tag },
+    { name: 'Perfumes', icon: Tag },
+    { name: 'Caps', icon: Tag },
+    { name: 'Accessories', icon: Tag },
   ];
 
-  // Cart Functions
   const addToCart = (product) => {
     const chosenSize = (product.sizes && product.sizes[0]) || 'M';
     const cartItemId = `${product.id}-${chosenSize}`;
@@ -83,6 +100,22 @@ export default function Home() {
 
   const removeFromCart = (cartItemId) => {
     setCart((prevCart) => prevCart.filter((item) => item.cartItemId !== cartItemId));
+  };
+
+  const handleOpenOrderModal = (product) => {
+    setSelectedProduct(product);
+    setOrderSize((product.sizes && product.sizes[0]) || 'M');
+  };
+
+  const handleSendWhatsAppOrder = (e) => {
+    e.preventDefault();
+    if (!selectedProduct) return;
+
+    const message = `Hello MODERN WALK team,%0A%0AI would like to place an order:%0A*Product:* ${selectedProduct.title}%0A*Price:* ₹${selectedProduct.base_price}%0A*Size:* ${orderSize}%0A*Payment Method:* ${paymentMethod}%0A*Customer Name:* ${customerName}%0A*Delivery Address:* ${customerAddress}`;
+    const whatsappUrl = `https://wa.me/919655872121?text=${message}`;
+
+    window.open(whatsappUrl, '_blank');
+    setSelectedProduct(null);
   };
 
   const handleTrackOrder = (e) => {
@@ -157,7 +190,7 @@ export default function Home() {
 
         {/* CATEGORY NAV */}
         <div className="bg-slate-800 border-t border-slate-700 py-2.5 overflow-x-auto">
-          <div className="max-w-7xl mx-auto px-4 flex gap-6 text-xs font-medium text-slate-300">
+          <div className="max-w-7xl mx-auto px-4 flex gap-3 text-xs font-medium text-slate-300">
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = selectedCategory === cat.name;
@@ -188,7 +221,7 @@ export default function Home() {
               Festive Season Offer
             </span>
             <h1 className="text-2xl sm:text-4xl font-extrabold">Min 40% - 80% Off On Men's Fashion</h1>
-            <p className="text-sm text-amber-100">Latest T-Shirts, Shirts, Accessories & Shoes Added Today!</p>
+            <p className="text-sm text-amber-100">Shirts, T-Shirts, Jeans, Shoes & Accessories Added Today!</p>
           </div>
           <button className="bg-slate-950 hover:bg-slate-900 text-amber-400 font-bold px-6 py-3 rounded-xl shadow-md text-sm transition">
             Explore Deals
@@ -207,7 +240,7 @@ export default function Home() {
 
           {filteredProducts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-slate-400 text-sm">No products found. Add items from the Admin page!</p>
+              <p className="text-slate-400 text-sm">No products found in this category.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -228,7 +261,6 @@ export default function Home() {
                     
                     <h3 className="text-xs font-bold text-slate-800 line-clamp-1 mt-1">{p.title}</h3>
 
-                    {/* Sizes Display */}
                     {p.sizes && p.sizes.length > 0 && (
                       <div className="flex gap-1 mt-1 flex-wrap">
                         {p.sizes.map((s) => (
@@ -242,16 +274,23 @@ export default function Home() {
                     <div className="flex items-baseline gap-2 mt-2">
                       <span className="text-sm font-black text-slate-900">₹{p.base_price}</span>
                       <span className="text-[10px] text-slate-400 line-through">₹{Math.round(p.base_price * 1.3)}</span>
-                      <span className="text-[10px] text-green-600 font-bold">25% OFF</span>
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => addToCart(p)}
-                    className="w-full mt-3 bg-slate-900 hover:bg-amber-400 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition"
-                  >
-                    Add To Cart
-                  </button>
+                  <div className="space-y-2 mt-3">
+                    <button 
+                      onClick={() => handleOpenOrderModal(p)}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1"
+                    >
+                      Buy / Order on WhatsApp
+                    </button>
+                    <button 
+                      onClick={() => addToCart(p)}
+                      className="w-full bg-slate-900 hover:bg-amber-400 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition"
+                    >
+                      Add To Cart
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -260,142 +299,85 @@ export default function Home() {
 
       </main>
 
-      {/* LOGIN MODAL */}
-      {isLoginOpen && (
+      {/* WHATSAPP ORDER / BUY NOW MODAL */}
+      {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
-            <button onClick={() => setIsLoginOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
+            <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-slate-900">Login to Your Account</h3>
-            <form onSubmit={(e) => { e.preventDefault(); alert('Logged in successfully!'); setIsLoginOpen(false); }} className="space-y-3">
+            <h3 className="text-base font-bold text-slate-900">Place Order via WhatsApp</h3>
+            
+            <div className="flex gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <img src={selectedProduct.image_url || selectedProduct.images?.[0]} alt={selectedProduct.title} className="w-16 h-16 object-cover rounded-lg" />
               <div>
-                <label className="text-xs font-bold text-slate-700">Email Address / Phone Number</label>
-                <input 
-                  type="text" 
-                  required
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="modernwalk206@gmail.com or +91 96558 72121" 
-                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
-                />
+                <h4 className="text-xs font-bold text-slate-900">{selectedProduct.title}</h4>
+                <p className="text-xs font-extrabold text-amber-600 mt-1">₹{selectedProduct.base_price}</p>
               </div>
-              <div>
-                <label className="text-xs font-bold text-slate-700">Password</label>
-                <input 
-                  type="password" 
-                  required
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••" 
-                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
-                />
-              </div>
-              <button type="submit" className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition">
-                Sign In
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* TRACK ORDER MODAL */}
-      {isTrackOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
-            <button onClick={() => { setIsTrackOpen(false); setTrackResult(null); }} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
-              <X className="w-5 h-5" />
-            </button>
-            <h3 className="text-lg font-bold text-slate-900">Track Order Status</h3>
-            <form onSubmit={handleTrackOrder} className="space-y-3">
-              <div>
-                <label className="text-xs font-bold text-slate-700">Enter Order ID</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="e.g. MW-102938" 
-                  value={trackOrderId}
-                  onChange={(e) => setTrackOrderId(e.target.value)}
-                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
-                />
-              </div>
-              <button type="submit" className="w-full bg-slate-900 hover:bg-amber-400 hover:text-slate-950 text-white font-bold py-2.5 rounded-lg text-xs transition">
-                Check Status
-              </button>
-            </form>
-
-            {trackResult && (
-              <div className="border border-amber-200 bg-amber-50 p-4 rounded-xl text-xs space-y-2">
-                <p><strong>Order ID:</strong> {trackResult.id}</p>
-                <p><strong>Status:</strong> <span className="text-amber-700 font-bold">{trackResult.status}</span></p>
-                <p><strong>Location:</strong> {trackResult.location}</p>
-                <p><strong>Estimated Delivery:</strong> {trackResult.expectedDelivery}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* SLIDE-OUT CART */}
-      {isCartOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
-          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between z-10 p-6 overflow-y-auto">
-            <div>
-              <div className="flex justify-between items-center border-b pb-4 mb-4">
-                <h2 className="text-base font-bold flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5 text-amber-500" /> Your Cart ({cartItemCount})
-                </h2>
-                <button onClick={() => setIsCartOpen(false)} className="p-1 text-slate-400 hover:text-slate-800">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {cart.length === 0 ? (
-                <div className="text-center py-16 space-y-3">
-                  <ShoppingCart className="w-12 h-12 text-slate-300 mx-auto" />
-                  <p className="text-sm font-semibold text-slate-500">Your cart is empty.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {cart.map((item) => (
-                    <div key={item.cartItemId} className="flex gap-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
-                      <img src={item.image_url || (item.images && item.images[0])} alt={item.title} className="w-16 h-16 object-cover rounded-lg" />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs font-bold truncate">{item.title}</h4>
-                        <p className="text-[10px] text-slate-400">Size: <span className="font-bold text-slate-700">{item.selectedSize}</span></p>
-                        <p className="text-xs font-black text-slate-900 mt-1">₹{item.base_price}</p>
-                        
-                        <div className="flex items-center gap-2 mt-2">
-                          <button onClick={() => updateQuantity(item.cartItemId, -1)} className="p-1 bg-white border border-slate-200 rounded">
-                            <Minus className="w-3 h-3" />
-                          </button>
-                          <span className="text-xs font-bold px-1">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.cartItemId, 1)} className="p-1 bg-white border border-slate-200 rounded">
-                            <Plus className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                      <button onClick={() => removeFromCart(item.cartItemId)} className="text-slate-400 hover:text-red-500">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
-            {cart.length > 0 && (
-              <div className="border-t pt-4 mt-6 space-y-3">
-                <div className="flex justify-between items-center text-sm font-bold">
-                  <span>Total Amount</span>
-                  <span className="text-base text-amber-600">₹{cartTotal}</span>
-                </div>
-                <button onClick={() => alert('Order Placed Successfully!')} className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-xs transition">
-                  Proceed to Checkout
-                </button>
+            <form onSubmit={handleSendWhatsAppOrder} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Select Size</label>
+                <select 
+                  value={orderSize} 
+                  onChange={(e) => setOrderSize(e.target.value)}
+                  className="w-full p-2 border border-slate-300 rounded-lg outline-none"
+                >
+                  {(selectedProduct.sizes || ['S', 'M', 'L', 'XL']).map((sz) => (
+                    <option key={sz} value={sz}>{sz}</option>
+                  ))}
+                </select>
               </div>
-            )}
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Payment Method</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('Online Payment (UPI/GPay)')}
+                    className={`p-2 border rounded-lg font-bold text-center ${paymentMethod.includes('Online') ? 'bg-amber-400 border-amber-500 text-slate-950' : 'bg-slate-50 text-slate-600'}`}
+                  >
+                    Online Payment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('Cash on Delivery')}
+                    className={`p-2 border rounded-lg font-bold text-center ${paymentMethod.includes('Cash') ? 'bg-amber-400 border-amber-500 text-slate-950' : 'bg-slate-50 text-slate-600'}`}
+                  >
+                    Cash on Delivery
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Your Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="Enter full name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full p-2 border border-slate-300 rounded-lg outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Delivery Address</label>
+                <textarea 
+                  required 
+                  rows={2}
+                  placeholder="Street, Landmark, City, Pincode"
+                  value={customerAddress}
+                  onChange={(e) => setCustomerAddress(e.target.value)}
+                  className="w-full p-2 border border-slate-300 rounded-lg outline-none"
+                />
+              </div>
+
+              <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition">
+                Send Order to WhatsApp (+91 96558 72121)
+              </button>
+            </form>
           </div>
         </div>
       )}
@@ -408,7 +390,6 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
           
-          {/* Store Address & Info */}
           <div className="space-y-3">
             <h4 className="font-bold text-amber-400 text-sm">MODERN WALK STORE</h4>
             <div className="space-y-2 text-slate-400">
@@ -427,7 +408,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Connect With Us */}
           <div>
             <h4 className="font-bold text-white mb-3 text-sm">Connect With Us</h4>
             <ul className="space-y-2 text-slate-400">
@@ -446,7 +426,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Quick Subpages */}
           <div>
             <h4 className="font-bold text-white mb-3 text-sm">Store Pages</h4>
             <ul className="space-y-2 text-slate-400">
@@ -455,7 +434,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Customer Support */}
           <div>
             <h4 className="font-bold text-white mb-3 text-sm">Customer Care</h4>
             <ul className="space-y-2 text-slate-400">
