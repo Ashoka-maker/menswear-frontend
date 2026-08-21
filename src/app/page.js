@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { 
   Search, ShoppingCart, User, Heart, ChevronRight, 
   Shirt, Watch, Sparkles, Tag, ShieldCheck, Truck, RefreshCw,
-  X, Plus, Minus, Trash2, Eye, MapPin, Mail, Phone, Instagram, Facebook, Twitter, Package
+  X, Plus, Minus, Trash2, Eye, MapPin, Mail, Phone, Instagram, 
+  Facebook, Twitter, Package 
 } from 'lucide-react';
 
 export default function Home() {
