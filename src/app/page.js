@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { 
   Search, ShoppingCart, User, Heart, ChevronRight, 
   Shirt, Watch, Sparkles, Tag, ShieldCheck, Truck, RefreshCw,
-  X, Plus, Minus, Trash2, Eye, Check
+  X, Plus, Minus, Trash2, Eye, MapPin, Mail, Phone, Instagram, Facebook, Twitter, Package
 } from 'lucide-react';
 
 export default function Home() {
@@ -17,6 +17,14 @@ export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
+
+  // Modals State
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isTrackOpen, setIsTrackOpen] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [trackOrderId, setTrackOrderId] = useState('');
+  const [trackResult, setTrackResult] = useState(null);
 
   const API_BASE_URL = 'https://menswear-backend-f2fo.onrender.com';
 
@@ -79,10 +87,20 @@ export default function Home() {
     setCart((prevCart) => prevCart.filter((item) => item.cartItemId !== cartItemId));
   };
 
+  const handleTrackOrder = (e) => {
+    e.preventDefault();
+    if (!trackOrderId.trim()) return;
+    setTrackResult({
+      id: trackOrderId,
+      status: 'In Transit 🚚',
+      expectedDelivery: 'Tomorrow by 8 PM',
+      location: 'Regional Logistics Hub'
+    });
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + item.base_price * item.quantity, 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Filter Logic
   const filteredProducts = products.filter((p) => {
     const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
     const matchesSearch =
@@ -94,16 +112,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans relative">
       
-      {/* 1. AMAZON/FLIPKART HEADER */}
+      {/* 1. HEADER */}
       <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-1">
             <span className="text-xl font-black tracking-wider text-amber-400">MODERN WALK</span>
           </Link>
 
-          {/* Search Bar */}
           <div className="flex-1 max-w-2xl flex items-center bg-white rounded-lg overflow-hidden border border-slate-300">
             <input
               type="text"
@@ -117,18 +133,20 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Header Action Items */}
-          <div className="flex items-center gap-6 text-sm font-semibold">
+          <div className="flex items-center gap-4 sm:gap-6 text-sm font-semibold">
             <Link href="/admin" className="hover:text-amber-400 text-xs bg-slate-800 px-3 py-1.5 rounded-md transition">
               Admin Portal
             </Link>
-            <button className="flex items-center gap-1 hover:text-amber-400">
+            
+            <button onClick={() => setIsTrackOpen(true)} className="hidden md:flex items-center gap-1 hover:text-amber-400 text-xs">
+              <Package className="w-4 h-4 text-amber-400" /> Track Order
+            </button>
+
+            <button onClick={() => setIsLoginOpen(true)} className="flex items-center gap-1 hover:text-amber-400">
               <User className="w-5 h-5" /> Login
             </button>
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="flex items-center gap-1 hover:text-amber-400 relative"
-            >
+            
+            <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-1 hover:text-amber-400 relative">
               <ShoppingCart className="w-5 h-5" /> Cart
               {cartItemCount > 0 && (
                 <span className="bg-amber-400 text-slate-950 font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center -mt-3 -ml-2">
@@ -139,7 +157,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 2. CATEGORY BAR */}
+        {/* CATEGORY NAV */}
         <div className="bg-slate-800 border-t border-slate-700 py-2.5 overflow-x-auto">
           <div className="max-w-7xl mx-auto px-4 flex gap-6 text-xs font-medium text-slate-300">
             {categories.map((cat) => {
@@ -162,10 +180,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        {/* 3. HERO / FESTIVAL BANNER */}
+        {/* BANNER */}
         <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white rounded-2xl p-6 sm:p-8 shadow-lg flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="space-y-2 text-center md:text-left">
             <span className="bg-white/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">
@@ -179,50 +197,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* 4. AMAZON-STYLE 4-BOX PROMO GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900 mb-2">Starting ₹99 | Daily Wear</h3>
-            <div className="h-40 bg-slate-100 rounded-lg overflow-hidden mb-2">
-              <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500" alt="Casual Wear" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-xs font-bold text-amber-600 flex items-center cursor-pointer">
-              Shop Now <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900 mb-2">Under ₹699 | Trending Shoes</h3>
-            <div className="h-40 bg-slate-100 rounded-lg overflow-hidden mb-2">
-              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" alt="Shoes" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-xs font-bold text-amber-600 flex items-center cursor-pointer">
-              Explore Footwear <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900 mb-2">Up to 60% Off | Premium Watches</h3>
-            <div className="h-40 bg-slate-100 rounded-lg overflow-hidden mb-2">
-              <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" alt="Watches" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-xs font-bold text-amber-600 flex items-center cursor-pointer">
-              See All Watches <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900 mb-2">Up to 50% Off | New Arrivals</h3>
-            <div className="h-40 bg-slate-100 rounded-lg overflow-hidden mb-2">
-              <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500" alt="New Shirts" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-xs font-bold text-amber-600 flex items-center cursor-pointer">
-              View Collection <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-        </div>
-
-        {/* 5. LIVE INVENTORY PRODUCT GRID */}
+        {/* PRODUCT GRID */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
             <div>
@@ -284,48 +259,93 @@ export default function Home() {
           )}
         </div>
 
-        {/* 6. TRUST BADGES */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-6 rounded-2xl border border-slate-200">
-          <div className="flex items-center gap-3">
-            <Truck className="w-8 h-8 text-amber-500" />
-            <div>
-              <h4 className="text-xs font-bold">Fast Delivery</h4>
-              <p className="text-[11px] text-slate-500">Dispatched within 24 hours</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-8 h-8 text-amber-500" />
-            <div>
-              <h4 className="text-xs font-bold">100% Original Products</h4>
-              <p className="text-[11px] text-slate-500">Sourced directly from brands</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <RefreshCw className="w-8 h-8 text-amber-500" />
-            <div>
-              <h4 className="text-xs font-bold">Easy Returns</h4>
-              <p className="text-[11px] text-slate-500">7 Days hassle-free return policy</p>
-            </div>
-          </div>
-        </div>
-
       </main>
 
-      {/* 7. SLIDE-OUT CART DRAWER */}
+      {/* LOGIN MODAL */}
+      {isLoginOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+            <button onClick={() => setIsLoginOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-lg font-bold text-slate-900">Login to Your Account</h3>
+            <form onSubmit={(e) => { e.preventDefault(); alert('Logged in successfully!'); setIsLoginOpen(false); }} className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700">Email Address / Phone Number</label>
+                <input 
+                  type="text" 
+                  required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="name@example.com or +91 9876543210" 
+                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-700">Password</label>
+                <input 
+                  type="password" 
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••" 
+                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
+                />
+              </div>
+              <button type="submit" className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition">
+                Sign In
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* TRACK ORDER MODAL */}
+      {isTrackOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+            <button onClick={() => { setIsTrackOpen(false); setTrackResult(null); }} className="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-lg font-bold text-slate-900">Track Order Status</h3>
+            <form onSubmit={handleTrackOrder} className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700">Enter Order ID</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. MW-102938" 
+                  value={trackOrderId}
+                  onChange={(e) => setTrackOrderId(e.target.value)}
+                  className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
+                />
+              </div>
+              <button type="submit" className="w-full bg-slate-900 hover:bg-amber-400 hover:text-slate-950 text-white font-bold py-2.5 rounded-lg text-xs transition">
+                Check Status
+              </button>
+            </form>
+
+            {trackResult && (
+              <div className="border border-amber-200 bg-amber-50 p-4 rounded-xl text-xs space-y-2">
+                <p><strong>Order ID:</strong> {trackResult.id}</p>
+                <p><strong>Status:</strong> <span className="text-amber-700 font-bold">{trackResult.status}</span></p>
+                <p><strong>Location:</strong> {trackResult.location}</p>
+                <p><strong>Estimated Delivery:</strong> {trackResult.expectedDelivery}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* SLIDE-OUT CART */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          {/* Overlay Backdrop */}
-          <div 
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsCartOpen(false)}
-          />
-
-          {/* Drawer Sidebar */}
+          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
           <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between z-10 p-6 overflow-y-auto">
             <div>
               <div className="flex justify-between items-center border-b pb-4 mb-4">
                 <h2 className="text-base font-bold flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5 text-amber-500" /> Your Shopping Cart ({cartItemCount})
+                  <ShoppingCart className="w-5 h-5 text-amber-500" /> Your Cart ({cartItemCount})
                 </h2>
                 <button onClick={() => setIsCartOpen(false)} className="p-1 text-slate-400 hover:text-slate-800">
                   <X className="w-5 h-5" />
@@ -341,11 +361,7 @@ export default function Home() {
                 <div className="space-y-4">
                   {cart.map((item) => (
                     <div key={item.cartItemId} className="flex gap-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
-                      <img 
-                        src={item.image_url || (item.images && item.images[0])} 
-                        alt={item.title} 
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
+                      <img src={item.image_url || (item.images && item.images[0])} alt={item.title} className="w-16 h-16 object-cover rounded-lg" />
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs font-bold truncate">{item.title}</h4>
                         <p className="text-[10px] text-slate-400">Size: <span className="font-bold text-slate-700">{item.selectedSize}</span></p>
@@ -376,10 +392,7 @@ export default function Home() {
                   <span>Total Amount</span>
                   <span className="text-base text-amber-600">₹{cartTotal}</span>
                 </div>
-                <button 
-                  onClick={() => alert('Proceeding to Checkout...')}
-                  className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl shadow-md text-xs transition"
-                >
+                <button onClick={() => alert('Order Placed Successfully!')} className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-xs transition">
                   Proceed to Checkout
                 </button>
               </div>
@@ -388,113 +401,71 @@ export default function Home() {
         </div>
       )}
 
-      {/* 8. QUICK VIEW MODAL */}
-      {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setQuickViewProduct(null)} />
-          <div className="relative bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl z-10 overflow-hidden space-y-4">
-            <button 
-              onClick={() => setQuickViewProduct(null)} 
-              className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-800"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex gap-4">
-              <img 
-                src={quickViewProduct.image_url || (quickViewProduct.images && quickViewProduct.images[0])} 
-                alt={quickViewProduct.title}
-                className="w-36 h-36 object-cover rounded-xl border border-slate-100" 
-              />
-              <div className="flex-1 space-y-1">
-                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded uppercase">
-                  {quickViewProduct.brand || 'MODERN WALK'}
-                </span>
-                <h3 className="text-sm font-bold text-slate-900">{quickViewProduct.title}</h3>
-                <p className="text-lg font-black text-slate-900 mt-2">₹{quickViewProduct.base_price}</p>
-              </div>
-            </div>
-
-            {/* Sizes Selection */}
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-2">Select Size</label>
-              <div className="flex gap-2 flex-wrap">
-                {(quickViewProduct.sizes || ['S', 'M', 'L', 'XL']).map((sz) => (
-                  <button
-                    key={sz}
-                    onClick={() => setSelectedSize(sz)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
-                      selectedSize === sz
-                        ? 'bg-amber-400 border-amber-400 text-slate-950'
-                        : 'border-slate-200 text-slate-600 hover:border-slate-400'
-                    }`}
-                  >
-                    {sz}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                addToCart(quickViewProduct, selectedSize);
-                setQuickViewProduct(null);
-              }}
-              className="w-full bg-slate-900 hover:bg-amber-400 hover:text-slate-950 text-white font-bold py-3 rounded-xl text-xs transition"
-            >
-              Add To Cart
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 9. FOOTER */}
+      {/* FOOTER WITH ADDRESS, EMAIL, PHONE, INSTAGRAM & MULTI-PAGE LINKS */}
       <footer className="bg-slate-900 text-slate-300 mt-12 border-t border-slate-800">
-        <div 
-          className="bg-slate-800 py-3 text-center text-xs font-semibold hover:bg-slate-700 cursor-pointer text-slate-200" 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
+        <div className="bg-slate-800 py-3 text-center text-xs font-semibold hover:bg-slate-700 cursor-pointer text-slate-200" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Back to top
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-xs">
+        <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
+          
+          {/* Store Info */}
+          <div className="space-y-3">
+            <h4 className="font-bold text-amber-400 text-sm">MODERN WALK STORE</h4>
+            <div className="space-y-2 text-slate-400">
+              <p className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                <span>Plot 42, Silicon Valley High Street, Hyderabad, Telangana - 500081</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <span>+91 98765 43210</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <span>support@modernwalk.com</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Connect With Us */}
           <div>
-            <h4 className="font-bold text-white mb-3 text-sm">Get to Know Us</h4>
+            <h4 className="font-bold text-white mb-3 text-sm">Connect With Us</h4>
             <ul className="space-y-2 text-slate-400">
-              <li className="hover:text-white cursor-pointer">About Us</li>
-              <li className="hover:text-white cursor-pointer">Careers</li>
-              <li className="hover:text-white cursor-pointer">Press Releases</li>
-              <li className="hover:text-white cursor-pointer">Modern Walk Science</li>
+              <li className="flex items-center gap-2 hover:text-white cursor-pointer">
+                <Instagram className="w-4 h-4 text-pink-500" /> @modernwalk_fashion
+              </li>
+              <li className="flex items-center gap-2 hover:text-white cursor-pointer">
+                <Facebook className="w-4 h-4 text-blue-500" /> /ModernWalkOfficial
+              </li>
+              <li className="flex items-center gap-2 hover:text-white cursor-pointer">
+                <Twitter className="w-4 h-4 text-sky-400" /> @ModernWalkStore
+              </li>
             </ul>
           </div>
 
+          {/* Quick Subpages */}
           <div>
-            <h4 className="font-bold text-white mb-3 text-sm">Connect with Us</h4>
+            <h4 className="font-bold text-white mb-3 text-sm">Store Pages</h4>
             <ul className="space-y-2 text-slate-400">
-              <li className="hover:text-white cursor-pointer">Facebook</li>
-              <li className="hover:text-white cursor-pointer">Twitter</li>
-              <li className="hover:text-white cursor-pointer">Instagram</li>
+              <li><Link href="/about" className="hover:text-amber-400">About Our Brand</Link></li>
+              <li><Link href="/contact" className="hover:text-amber-400">Contact Us</Link></li>
+              <li><Link href="/privacy" className="hover:text-amber-400">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-amber-400">Terms & Conditions</Link></li>
             </ul>
           </div>
 
+          {/* Customer Service */}
           <div>
-            <h4 className="font-bold text-white mb-3 text-sm">Make Money with Us</h4>
+            <h4 className="font-bold text-white mb-3 text-sm">Customer Care</h4>
             <ul className="space-y-2 text-slate-400">
-              <li className="hover:text-white cursor-pointer">Sell on Modern Walk</li>
-              <li className="hover:text-white cursor-pointer">Become an Affiliate</li>
-              <li className="hover:text-white cursor-pointer">Fulfillment by Modern Walk</li>
+              <li onClick={() => setIsTrackOpen(true)} className="hover:text-amber-400 cursor-pointer">Track Your Package</li>
+              <li className="hover:text-amber-400 cursor-pointer">Return & Replacement Centre</li>
+              <li className="hover:text-amber-400 cursor-pointer">100% Purchase Protection</li>
+              <li className="hover:text-amber-400 cursor-pointer">Help & FAQs</li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold text-white mb-3 text-sm">Let Us Help You</h4>
-            <ul className="space-y-2 text-slate-400">
-              <li className="hover:text-white cursor-pointer">Your Account</li>
-              <li className="hover:text-white cursor-pointer">Returns Centre</li>
-              <li className="hover:text-white cursor-pointer">100% Purchase Protection</li>
-              <li className="hover:text-white cursor-pointer">Help</li>
-            </ul>
-          </div>
         </div>
 
         <div className="border-t border-slate-800 py-6 text-center text-[11px] text-slate-500">
