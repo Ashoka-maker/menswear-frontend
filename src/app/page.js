@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { 
   Search, ShoppingCart, User, Heart, ChevronRight, 
   Shirt, Watch, Sparkles, Tag, ShieldCheck, Truck, RefreshCw,
-  X, Plus, Minus, Trash2, Eye, MapPin, Mail, Phone, Instagram, 
-  Facebook, Twitter, Package 
+  X, Plus, Minus, Trash2, Eye, MapPin, Mail, Phone, Instagram, Package 
 } from 'lucide-react';
 
 export default function Home() {
@@ -17,7 +16,6 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('');
 
   // Modals State
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -52,8 +50,8 @@ export default function Home() {
   ];
 
   // Cart Functions
-  const addToCart = (product, size = null) => {
-    const chosenSize = size || (product.sizes && product.sizes[0]) || 'M';
+  const addToCart = (product) => {
+    const chosenSize = (product.sizes && product.sizes[0]) || 'M';
     const cartItemId = `${product.id}-${chosenSize}`;
 
     setCart((prevCart) => {
@@ -113,7 +111,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans relative">
       
-      {/* 1. HEADER */}
+      {/* HEADER */}
       <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           
@@ -223,16 +221,6 @@ export default function Home() {
                         alt={p.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
-                      <button 
-                        onClick={() => {
-                          setQuickViewProduct(p);
-                          setSelectedSize(p.sizes ? p.sizes[0] : 'M');
-                        }}
-                        className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full text-slate-700 hover:text-amber-500 transition shadow-sm"
-                        title="Quick View"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
                     </div>
 
                     <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded uppercase">
@@ -402,7 +390,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* FOOTER WITH ADDRESS, EMAIL, PHONE, INSTAGRAM & MULTI-PAGE LINKS */}
+      {/* FOOTER */}
       <footer className="bg-slate-900 text-slate-300 mt-12 border-t border-slate-800">
         <div className="bg-slate-800 py-3 text-center text-xs font-semibold hover:bg-slate-700 cursor-pointer text-slate-200" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Back to top
@@ -410,7 +398,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
           
-          {/* Store Info */}
+          {/* Store Address & Info */}
           <div className="space-y-3">
             <h4 className="font-bold text-amber-400 text-sm">MODERN WALK STORE</h4>
             <div className="space-y-2 text-slate-400">
@@ -437,10 +425,10 @@ export default function Home() {
                 <Instagram className="w-4 h-4 text-pink-500" /> @modernwalk_fashion
               </li>
               <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-                <Facebook className="w-4 h-4 text-blue-500" /> /ModernWalkOfficial
+                <Mail className="w-4 h-4 text-amber-400" /> support@modernwalk.com
               </li>
               <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-                <Twitter className="w-4 h-4 text-sky-400" /> @ModernWalkStore
+                <Phone className="w-4 h-4 text-amber-400" /> +91 98765 43210
               </li>
             </ul>
           </div>
@@ -451,19 +439,16 @@ export default function Home() {
             <ul className="space-y-2 text-slate-400">
               <li><Link href="/about" className="hover:text-amber-400">About Our Brand</Link></li>
               <li><Link href="/contact" className="hover:text-amber-400">Contact Us</Link></li>
-              <li><Link href="/privacy" className="hover:text-amber-400">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-amber-400">Terms & Conditions</Link></li>
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Customer Support */}
           <div>
             <h4 className="font-bold text-white mb-3 text-sm">Customer Care</h4>
             <ul className="space-y-2 text-slate-400">
               <li onClick={() => setIsTrackOpen(true)} className="hover:text-amber-400 cursor-pointer">Track Your Package</li>
               <li className="hover:text-amber-400 cursor-pointer">Return & Replacement Centre</li>
               <li className="hover:text-amber-400 cursor-pointer">100% Purchase Protection</li>
-              <li className="hover:text-amber-400 cursor-pointer">Help & FAQs</li>
             </ul>
           </div>
 
