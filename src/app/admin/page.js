@@ -63,38 +63,31 @@ export default function AdminPage() {
     }
   };
 
-  const handleFileUpload = async (e) => {
+  // Convert uploaded image directly into Base64 (No Backend Server Failures)
+  const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append('image', file);
+    const reader = new FileReader();
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      const uploadedUrl = data.url || data.imageUrl;
-      if (uploadedUrl) {
-        setImageUrl(uploadedUrl);
-      } else {
-        alert('Could not retrieve image URL. Please paste a web link directly in Option B.');
-      }
-    } catch (err) {
-      alert('Upload failed. Please paste direct image web link in Option B.');
-    } finally {
+    reader.onloadend = () => {
+      setImageUrl(reader.result);
       setUploading(false);
-    }
+    };
+
+    reader.onerror = () => {
+      alert('Failed to read image file.');
+      setUploading(false);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !price || !imageUrl) {
-      alert('Please fill in Title, Price, and provide an Image URL!');
+      alert('Please fill in Title, Price, and upload an Image!');
       return;
     }
 
@@ -261,7 +254,7 @@ export default function AdminPage() {
                   required
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="e.g. 799"
+                  placeholder="e.g. 699"
                   className="w-full mt-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs outline-none focus:border-amber-400 text-white"
                 />
               </div>
@@ -291,32 +284,22 @@ export default function AdminPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Option A: Upload Image File</label>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Upload Product Image</label>
               <input
                 type="file"
                 accept="image/*"
+                required={!imageUrl}
                 onChange={handleFileUpload}
                 className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-amber-400 hover:file:bg-slate-700 cursor-pointer"
               />
-              {uploading && <p className="text-xs text-amber-400 mt-1">Uploading image...</p>}
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Option B: Image Web URL (Recommended)</label>
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/photo-..."
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs outline-none focus:border-amber-400 text-white"
-              />
+              {uploading && <p className="text-xs text-amber-400 mt-1">Processing image...</p>}
             </div>
 
             {imageUrl && (
-              <div className="p-3 bg-slate-800 rounded-xl flex items-center gap-4">
-                <img src={imageUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-700" />
+              <div className="p-3 bg-slate-800 rounded-xl flex items-center gap-4 border border-slate-700">
+                <img src={imageUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-600" />
                 <span className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
-                  <CheckCircle2 className="w-4 h-4" /> Ready to publish
+                  <CheckCircle2 className="w-4 h-4" /> Image Loaded Successfully
                 </span>
               </div>
             )}
