@@ -92,7 +92,7 @@ export default function Home() {
       id: trackOrderId,
       status: 'In Transit 🚚',
       expectedDelivery: 'Tomorrow by 8 PM',
-      location: 'Regional Logistics Hub'
+      location: 'Lakdikapul Warehouse'
     });
   };
 
@@ -228,6 +228,17 @@ export default function Home() {
                     
                     <h3 className="text-xs font-bold text-slate-800 line-clamp-1 mt-1">{p.title}</h3>
 
+                    {/* Sizes Display */}
+                    {p.sizes && p.sizes.length > 0 && (
+                      <div className="flex gap-1 mt-1 flex-wrap">
+                        {p.sizes.map((s) => (
+                          <span key={s} className="text-[9px] bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-slate-600 font-bold">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="flex items-baseline gap-2 mt-2">
                       <span className="text-sm font-black text-slate-900">₹{p.base_price}</span>
                       <span className="text-[10px] text-slate-400 line-through">₹{Math.round(p.base_price * 1.3)}</span>
@@ -265,7 +276,7 @@ export default function Home() {
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="name@example.com or +91 9876543210" 
+                  placeholder="modernwalk206@gmail.com or +91 96558 72121" 
                   className="w-full mt-1 border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:border-amber-400"
                 />
               </div>
@@ -403,15 +414,15 @@ export default function Home() {
             <div className="space-y-2 text-slate-400">
               <p className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                <span>Plot 42, Silicon Valley High Street, Hyderabad, Telangana - 500081</span>
+                <span>Pillar no A1191, MODERN WALK MENS WEAR, Panasonic services center, 6-2-967, Chintal Basti Main Rd, P & T Officers Colony, Veer Nagar, Lakdikapul, Hyderabad, Telangana 500004</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 96558 72121</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>support@modernwalk.com</span>
+                <span>modernwalk206@gmail.com</span>
               </p>
             </div>
           </div>
@@ -424,13 +435,13 @@ export default function Home() {
                 <svg className="w-4 h-4 fill-current text-pink-500" viewBox="0 0 24 24">
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
-                <span>@modernwalk_fashion</span>
+                <span>@modernwalk1</span>
               </li>
               <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-                <Mail className="w-4 h-4 text-amber-400" /> support@modernwalk.com
+                <Mail className="w-4 h-4 text-amber-400" /> modernwalk206@gmail.com
               </li>
               <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-                <Phone className="w-4 h-4 text-amber-400" /> +91 98765 43210
+                <Phone className="w-4 h-4 text-amber-400" /> +91 96558 72121
               </li>
             </ul>
           </div>
