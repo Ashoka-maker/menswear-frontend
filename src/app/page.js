@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
+import Link from 'next/link';
 import { 
   ShoppingBag, ShoppingCart, Star, X, Plus, Trash2, CheckCircle, 
-  Heart, MapPin, ShieldCheck, Truck, RefreshCw, Eye, Phone, Mail 
+  Heart, MapPin, ShieldCheck, Truck, RefreshCw, Eye, Phone, Mail, Lock, Instagram 
 } from 'lucide-react';
 
 export default function Home() {
@@ -31,7 +32,7 @@ export default function Home() {
   // WHATSAPP NUMBER TO RECEIVE ORDERS
   const ADMIN_WHATSAPP_NUMBER = '919655872121'; 
 
-  // All store categories including new fields
+  // All store categories
   const categories = ['All', 'T-Shirts', 'Shirts', 'Jeans', 'Pants', 'Shorts', 'Jackets', 'Shoes', 'Sleepers', 'Watches', 'Ethnic'];
 
   useEffect(() => {
@@ -99,7 +100,6 @@ export default function Home() {
     return cart.reduce((total, item) => total + parseFloat(item.base_price), 0).toFixed(2);
   };
 
-  // Handle Order Submit (UPI Online or COD via WhatsApp)
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
 
@@ -180,6 +180,19 @@ export default function Home() {
     <div className="min-h-screen bg-slate-100 text-slate-800 relative font-sans">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
+      {/* Top Banner Bar */}
+      <div className="bg-amber-400 text-slate-950 text-xs font-bold py-1.5 px-4 text-center flex justify-between items-center max-w-7xl mx-auto">
+        <span className="hidden sm:inline">📍 Pillar No. A1191, Lakdikapul, Hyderabad</span>
+        <div className="flex gap-4 mx-auto sm:mx-0">
+          <a href="https://instagram.com/modernwalk1" target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:underline">
+            <Instagram className="w-3.5 h-3.5" /> @modernwalk1
+          </a>
+          <a href="mailto:modernwalk206@gmail.com" className="flex items-center gap-1 hover:underline">
+            <Mail className="w-3.5 h-3.5" /> modernwalk206@gmail.com
+          </a>
+        </div>
+      </div>
+
       {/* Header */}
       <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
@@ -187,7 +200,7 @@ export default function Home() {
             <ShoppingBag className="w-8 h-8 text-amber-400" />
             <div>
               <h1 className="text-xl font-black tracking-wider">MODERN WALK</h1>
-              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest block -mt-1">E-Commerce Store</span>
+              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest block -mt-1">MENS WEAR</span>
             </div>
           </div>
 
@@ -201,7 +214,14 @@ export default function Home() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/admin" 
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 border border-amber-400/30 px-3 py-1.5 rounded-lg transition"
+            >
+              <Lock className="w-3.5 h-3.5" /> Owner Admin
+            </Link>
+
             <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 px-4 py-2 rounded-lg font-bold transition text-xs">
               <ShoppingCart className="w-4 h-4" /> Cart
               <span className="bg-slate-900 text-white px-1.5 py-0.5 rounded-full text-[10px]">{cart.length}</span>
@@ -406,7 +426,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Order Checkout Modal (UPI + COD) */}
+      {/* Order Checkout Modal */}
       {isCheckingOut && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
@@ -420,7 +440,7 @@ export default function Home() {
               </div>
               <div>
                 <label className="text-xs font-semibold text-slate-600 block mb-1">Phone Number</label>
-                <input required type="text" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} placeholder="+91 9876543210" className="w-full border rounded-lg p-2.5 text-sm outline-none" />
+                <input required type="text" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} placeholder="+91 9655872121" className="w-full border rounded-lg p-2.5 text-sm outline-none" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -453,7 +473,7 @@ export default function Home() {
           <div className="bg-white max-w-sm w-full rounded-2xl p-6 text-center shadow-2xl">
             <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Order Confirmed!</h3>
-            <p className="text-slate-500 text-sm mb-6">Thank you for shopping with Modern Walk.</p>
+            <p className="text-slate-500 text-sm mb-6">Thank you for shopping with Modern Walk Mens Wear.</p>
             <button onClick={() => setOrderComplete(false)} className="bg-slate-900 text-white font-bold px-6 py-2.5 rounded-xl text-sm">
               Back to Store
             </button>
@@ -461,27 +481,39 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer with Store Location & Map Tracker */}
+      {/* Footer with Updated Exact Address & Contact Info */}
       <footer className="bg-slate-900 text-white mt-16 py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <h3 className="text-xl font-black text-amber-400">MODERN WALK STORE</h3>
-            <p className="text-sm text-slate-300">Visit our physical flagship store to explore our complete collection of shirts, watches, shoes, sleepers, and outerwear.</p>
-            <div className="text-xs space-y-2 text-slate-300 pt-2">
-              <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-400" /> Main Road, Commercial Hub, City Center, Telangana - 500001</p>
-              <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-amber-400" /> +91 96558 72121</p>
-              <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-amber-400" /> support@modernwalk.com</p>
+          <div className="space-y-4">
+            <h3 className="text-xl font-black text-amber-400">MODERN WALK MENS WEAR</h3>
+            <p className="text-sm text-slate-300">Visit our store in Lakdikapul or contact us directly for orders, custom sizes, and local store pickups.</p>
+            
+            <div className="text-xs space-y-3 text-slate-300 pt-1">
+              <p className="flex items-start gap-2.5">
+                <MapPin className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" /> 
+                <span>
+                  <strong>Address:</strong> Pillar no A1191, MODERN WALK MENS WEAR, Near Panasonic services center, 6-2-967, Chintal Basti Main Rd, P & T Officers Colony, Veer Nagar, Lakdikapul, Hyderabad, Telangana 500004
+                </span>
+              </p>
+              <p className="flex items-center gap-2.5">
+                <Mail className="w-4 h-4 text-amber-400 shrink-0" /> 
+                <span><strong>Email:</strong> modernwalk206@gmail.com</span>
+              </p>
+              <p className="flex items-center gap-2.5">
+                <Instagram className="w-4 h-4 text-amber-400 shrink-0" /> 
+                <span><strong>Instagram:</strong> <a href="https://instagram.com/modernwalk1" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline">@modernwalk1</a></span>
+              </p>
             </div>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-slate-700 h-56 shadow-lg">
+          <div className="rounded-xl overflow-hidden border border-slate-700 h-64 shadow-lg">
             <iframe 
-              title="Store Location Map"
+              title="Modern Walk Store Location Map"
               width="100%" 
               height="100%" 
               frameBorder="0" 
               scrolling="no" 
-              src="https://maps.google.com/maps?q=Hyderabad&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=6-2-967,+Chintal+Basti+Main+Rd,+Lakdikapul,+Hyderabad,+Telangana+500004&t=&z=16&ie=UTF8&iwloc=&output=embed"
             ></iframe>
           </div>
         </div>
