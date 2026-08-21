@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
-  ShoppingBag, Phone, Mail, MapPin, Instagram, 
-  X, MapPinOff, Locate, Trash2, CheckCircle, ExternalLink 
+  ShoppingBag, Phone, Mail, MapPin, 
+  X, Locate, Trash2, ExternalLink 
 } from 'lucide-react';
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
   // Checkout Modal State
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' | 'ONLINE'
+  const [paymentMethod, setPaymentMethod] = useState('COD');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
@@ -27,9 +27,7 @@ export default function Home() {
   const STORE_PHONE = '+919655872121';
   const STORE_EMAIL = 'modernwalk206@gmail.com';
   const STORE_INSTA = 'https://instagram.com/modernwalk1';
-  const STORE_ADDRESS_QUERY = encodeURIComponent(
-    'Pillar no A1191, MODERN WALK MENS WEAR, Panasonic services center, 6-2-967, Chintal Basti Main Rd, Hyderabad, Telangana 500004'
-  );
+  const MAPS_URL = 'https://www.google.com/maps/search/Modern%20Walk%20Mens%20Wear/@17.407489776611328,78.4599609375,17z?hl=en';
   const UPI_ID = '9483326024@ybl';
 
   const categories = [
@@ -52,7 +50,6 @@ export default function Home() {
     }
   };
 
-  // Cart Handlers
   const addToCart = (product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -84,7 +81,6 @@ export default function Home() {
     );
   };
 
-  // GPS Live Location
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
@@ -98,14 +94,13 @@ export default function Home() {
         setLiveLocation({ lat: latitude, lng: longitude, url: mapsUrl });
         setGettingLocation(false);
       },
-      (error) => {
-        alert('Unable to retrieve location. Please check location permissions.');
+      () => {
+        alert('Unable to retrieve location. Please check browser permissions.');
         setGettingLocation(false);
       }
     );
   };
 
-  // WhatsApp Order Submission
   const handleSendWhatsAppOrder = (itemToOrder = null) => {
     const item = itemToOrder || selectedProduct;
     if (!item || !customerName || !customerPhone) {
@@ -131,8 +126,7 @@ export default function Home() {
 ----------------------------------
 Please confirm my order!`;
 
-    const whatsappUrl = `https://wa.me/919655872121?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(`https://wa.me/919655872121?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const filteredProducts = selectedCategory === 'All' 
@@ -144,28 +138,26 @@ Please confirm my order!`;
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col justify-between">
       <div>
-        {/* Navigation Bar */}
+        {/* Header */}
         <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
           <Link href="/" className="text-lg font-black tracking-wider text-amber-400">
             MODERN WALK
           </Link>
 
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition text-slate-200"
-            >
-              <ShoppingBag className="w-5 h-5" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {cart.reduce((a, b) => a + b.quantity, 0)}
-                </span>
-              )}
-            </button>
-          </div>
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition text-slate-200"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cart.reduce((a, b) => a + b.quantity, 0)}
+              </span>
+            )}
+          </button>
         </header>
 
-        {/* Category Filter */}
+        {/* Categories */}
         <nav className="bg-slate-900 border-b border-slate-800 px-4 py-3 overflow-x-auto flex items-center gap-2 scrollbar-none">
           {categories.map((cat) => (
             <button
@@ -231,7 +223,7 @@ Please confirm my order!`;
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <h2 className="text-base font-bold flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-amber-400" /> Your Shopping Cart
+                  <ShoppingBag className="w-5 h-5 text-amber-400" /> Your Cart
                 </h2>
                 <button onClick={() => setIsCartOpen(false)} className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
@@ -295,7 +287,6 @@ Please confirm my order!`;
               </button>
             </div>
 
-            {/* Product Summary */}
             <div className="flex items-center gap-3 bg-slate-800 p-3 rounded-xl border border-slate-700">
               <img src={selectedProduct.image_url || selectedProduct.images?.[0]} alt="" className="w-12 h-12 object-cover rounded-lg" />
               <div>
@@ -304,7 +295,6 @@ Please confirm my order!`;
               </div>
             </div>
 
-            {/* Size Selector */}
             {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1.5">Select Size</label>
@@ -324,7 +314,6 @@ Please confirm my order!`;
               </div>
             )}
 
-            {/* Payment Method Option */}
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1.5">Payment Method</label>
               <div className="grid grid-cols-2 gap-2">
@@ -349,7 +338,6 @@ Please confirm my order!`;
               </div>
             </div>
 
-            {/* UPI Info Box for Online Payment */}
             {paymentMethod === 'ONLINE' && (
               <div className="bg-amber-400/10 border border-amber-400/30 p-3 rounded-xl space-y-1">
                 <p className="text-[11px] text-amber-300 font-semibold">Pay via UPI App (GPay/PhonePe/Paytm):</p>
@@ -365,7 +353,6 @@ Please confirm my order!`;
               </div>
             )}
 
-            {/* Customer Details Form */}
             <div className="space-y-3">
               <div>
                 <label className="text-[11px] font-semibold text-slate-300">Your Name *</label>
@@ -400,7 +387,6 @@ Please confirm my order!`;
                 />
               </div>
 
-              {/* Share Live Location */}
               <div>
                 <button
                   type="button"
@@ -428,11 +414,10 @@ Please confirm my order!`;
       <footer className="bg-slate-900 border-t border-slate-800 mt-12 py-8 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* Store Info */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">MODERN WALK STORE</h3>
             <a 
-              href={`https://www.google.com/maps/search/?api=1&query=${STORE_ADDRESS_QUERY}`}
+              href={MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-start gap-2.5 text-xs text-slate-400 hover:text-amber-400 transition group"
@@ -444,7 +429,6 @@ Please confirm my order!`;
             </a>
           </div>
 
-          {/* Connect With Us */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-200">Connect With Us</h3>
             <div className="space-y-2">
@@ -454,7 +438,9 @@ Please confirm my order!`;
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 text-xs text-slate-400 hover:text-pink-400 transition"
               >
-                <Instagram className="w-4 h-4 text-pink-500" />
+                <svg className="w-4 h-4 text-pink-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
                 <span>@modernwalk1</span>
               </a>
 
