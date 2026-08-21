@@ -129,20 +129,38 @@ Please confirm my order!`;
     window.open(`https://wa.me/919655872121?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  // Flexible category filtering matching singular, plural, and trimmed strings
-  const normalize = (str) => {
-    if (!str) return '';
-    let cleaned = str.trim().toLowerCase();
-    return cleaned.endsWith('s') ? cleaned.slice(0, -1) : cleaned;
-  };
-
+  // Enhanced search filter matching title, brand, category, subcategory, or item type
   const filteredProducts = selectedCategory === 'All' 
     ? products 
     : products.filter(p => {
-        if (!p.category) return false;
-        const prodCat = normalize(p.category);
-        const selectedCat = normalize(selectedCategory);
-        return prodCat.includes(selectedCat) || selectedCat.includes(prodCat);
+        const cat = selectedCategory.toLowerCase();
+        
+        // Target keywords (singular/plural)
+        const targets = [cat];
+        if (cat.endsWith('s')) targets.push(cat.slice(0, -1)); // e.g. 'shirts' -> 'shirt'
+        if (cat === 't-shirts' || cat === 'tshirt' || cat === 't-shirt') targets.push('tshirt', 't-shirt', 't shirt');
+        if (cat === 'sunglasses' || cat === 'sunglass') targets.push('sunglass', 'glass', 'glasses');
+        if (cat === 'shoes') targets.push('shoe', 'footwear', 'bata', 'puma', 'sneaker', 'classic');
+        if (cat === 'watches') targets.push('watch', 'titan');
+
+        // Text fields to inspect
+        const searchPool = [
+          p.title, 
+          p.category, 
+          p.subCategory, 
+          p.brand, 
+          p.type,
+          p.name
+        ].filter(Boolean).join(' ').toLowerCase();
+
+        // Avoid matching "T-Shirt" when user selects "Shirts"
+        if ((cat === 'shirts' || cat === 'shirt') && searchPool.includes('t-shirt') && !searchPool.includes(' slim cotton') && !searchPool.includes('jockey shirt')) {
+          if (!searchPool.replace('t-shirt', '').replace('tshirt', '').includes('shirt')) {
+            return false;
+          }
+        }
+
+        return targets.some(target => searchPool.includes(target));
       });
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.base_price || item.price || 0) * item.quantity, 0);
