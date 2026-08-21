@@ -129,9 +129,21 @@ Please confirm my order!`;
     window.open(`https://wa.me/919655872121?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  // Flexible category filtering matching singular, plural, and trimmed strings
+  const normalize = (str) => {
+    if (!str) return '';
+    let cleaned = str.trim().toLowerCase();
+    return cleaned.endsWith('s') ? cleaned.slice(0, -1) : cleaned;
+  };
+
   const filteredProducts = selectedCategory === 'All' 
     ? products 
-    : products.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase());
+    : products.filter(p => {
+        if (!p.category) return false;
+        const prodCat = normalize(p.category);
+        const selectedCat = normalize(selectedCategory);
+        return prodCat.includes(selectedCat) || selectedCat.includes(prodCat);
+      });
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.base_price || item.price || 0) * item.quantity, 0);
 
@@ -226,43 +238,49 @@ Please confirm my order!`;
             </div>
 
             {/* Product Cards Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-[#1e293b]/60 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-slate-700 transition">
-                  <div className="relative aspect-square overflow-hidden bg-slate-800">
-                    <img 
-                      src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/300'} 
-                      alt={product.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                    />
-                  </div>
-                  <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
-                    <div>
-                      <p className="text-[10px] text-slate-400 uppercase font-semibold">{product.brand || 'MODERN WALK'}</p>
-                      <h3 className="text-xs font-bold text-slate-100 line-clamp-1">{product.title}</h3>
-                      <p className="text-xs font-bold text-amber-400 mt-1">₹{product.base_price || product.price}</p>
+            {filteredProducts.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-xs">
+                No items found under <span className="text-amber-400 font-bold">{selectedCategory}</span>.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className="bg-[#1e293b]/60 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-slate-700 transition">
+                    <div className="relative aspect-square overflow-hidden bg-slate-800">
+                      <img 
+                        src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/300'} 
+                        alt={product.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
                     </div>
-                    <div className="grid grid-cols-2 gap-1.5 pt-2">
-                      <button 
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold py-1.5 rounded-lg transition"
-                      >
-                        + Cart
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          setSelectedSize(product.sizes?.[0] || 'M');
-                        }}
-                        className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-bold py-1.5 rounded-lg transition"
-                      >
-                        Buy Now
-                      </button>
+                    <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="text-[10px] text-slate-400 uppercase font-semibold">{product.brand || 'MODERN WALK'}</p>
+                        <h3 className="text-xs font-bold text-slate-100 line-clamp-1">{product.title}</h3>
+                        <p className="text-xs font-bold text-amber-400 mt-1">₹{product.base_price || product.price}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 pt-2">
+                        <button 
+                          onClick={() => addToCart(product)}
+                          className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold py-1.5 rounded-lg transition"
+                        >
+                          + Cart
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setSelectedProduct(product);
+                            setSelectedSize(product.sizes?.[0] || 'M');
+                          }}
+                          className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-bold py-1.5 rounded-lg transition"
+                        >
+                          Buy Now
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </main>
