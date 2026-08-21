@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   ShoppingBag, Phone, Mail, MapPin, 
-  X, Locate, Trash2, ExternalLink 
+  X, Locate, Trash2, ExternalLink, User, Shield
 } from 'lucide-react';
 
 export default function Home() {
@@ -136,37 +136,52 @@ Please confirm my order!`;
   const cartTotal = cart.reduce((sum, item) => sum + (item.base_price || item.price || 0) * item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-[#0a1120] text-white font-sans flex flex-col justify-between">
       <div>
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="text-lg font-black tracking-wider text-amber-400">
+        {/* Top Header */}
+        <header className="sticky top-0 z-40 bg-[#0d182e] border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+          <Link href="/" className="text-xl font-extrabold tracking-wider text-amber-400">
             MODERN WALK
           </Link>
 
-          <button 
-            onClick={() => setIsCartOpen(true)}
-            className="relative p-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition text-slate-200"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            {cart.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {cart.reduce((a, b) => a + b.quantity, 0)}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link 
+              href="/admin" 
+              className="px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold rounded-lg text-slate-200 border border-slate-700 flex items-center gap-1.5 transition"
+            >
+              <Shield className="w-3.5 h-3.5 text-amber-400" />
+              Admin Portal
+            </Link>
+
+            <button className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+              <User className="w-4 h-4" /> Login
+            </button>
+
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="relative px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Cart</span>
+              {cart.length > 0 && (
+                <span className="bg-slate-950 text-amber-400 text-[10px] font-bold px-1.5 py-0.2 rounded-full ml-0.5">
+                  {cart.reduce((a, b) => a + b.quantity, 0)}
+                </span>
+              )}
+            </button>
+          </div>
         </header>
 
-        {/* Categories */}
-        <nav className="bg-slate-900 border-b border-slate-800 px-4 py-3 overflow-x-auto flex items-center gap-2 scrollbar-none">
+        {/* Categories Bar */}
+        <nav className="bg-[#0b1326] border-b border-slate-800/80 px-4 py-2.5 overflow-x-auto flex items-center gap-2 scrollbar-none">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                 selectedCategory === cat 
-                  ? 'bg-amber-400 text-slate-950' 
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
+                  ? 'bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-400/10' 
+                  : 'bg-slate-800/50 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
               }`}
             >
               {cat}
@@ -174,52 +189,89 @@ Please confirm my order!`;
           ))}
         </nav>
 
-        {/* Product Grid */}
-        <main className="max-w-6xl mx-auto p-4 sm:p-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between group">
-                <div className="relative aspect-square overflow-hidden bg-slate-800">
-                  <img 
-                    src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/300'} 
-                    alt={product.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
-                </div>
-                <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-semibold">{product.brand || 'MODERN WALK'}</p>
-                    <h3 className="text-xs font-bold text-slate-100 line-clamp-1">{product.title}</h3>
-                    <p className="text-xs font-bold text-amber-400 mt-1">₹{product.base_price || product.price}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5 pt-2">
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold py-1.5 rounded-lg transition"
-                    >
-                      + Cart
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setSelectedSize(product.sizes?.[0] || 'M');
-                      }}
-                      className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-bold py-1.5 rounded-lg transition"
-                    >
-                      Buy Now
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        {/* Main Content Area */}
+        <main className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+          
+          {/* Festive Season Offer Banner */}
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-3xl p-6 sm:p-10 text-center shadow-xl space-y-3 relative overflow-hidden">
+            <span className="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              Festive Season Offer
+            </span>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Min 40% - 80% Off On<br className="hidden sm:block"/> Men's Fashion
+            </h1>
+            <p className="text-xs sm:text-sm text-amber-100 font-medium">
+              Latest T-Shirts, Shirts, Accessories & Shoes Added Today!
+            </p>
+            <div className="pt-2">
+              <a 
+                href="#inventory"
+                className="inline-block bg-slate-950 hover:bg-slate-900 text-amber-400 font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg"
+              >
+                Explore Deals
+              </a>
+            </div>
           </div>
+
+          {/* Featured Inventory Section */}
+          <div id="inventory" className="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h2 className="text-base font-bold text-white">Featured Inventory</h2>
+                <p className="text-xs text-slate-400">Live products managed directly via Admin Dashboard</p>
+              </div>
+              <span className="text-xs font-semibold text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">
+                {filteredProducts.length} Items Found
+              </span>
+            </div>
+
+            {/* Product Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="bg-[#1e293b]/60 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-slate-700 transition">
+                  <div className="relative aspect-square overflow-hidden bg-slate-800">
+                    <img 
+                      src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/300'} 
+                      alt={product.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                  </div>
+                  <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-semibold">{product.brand || 'MODERN WALK'}</p>
+                      <h3 className="text-xs font-bold text-slate-100 line-clamp-1">{product.title}</h3>
+                      <p className="text-xs font-bold text-amber-400 mt-1">₹{product.base_price || product.price}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5 pt-2">
+                      <button 
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold py-1.5 rounded-lg transition"
+                      >
+                        + Cart
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setSelectedSize(product.sizes?.[0] || 'M');
+                        }}
+                        className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-bold py-1.5 rounded-lg transition"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </main>
       </div>
 
       {/* Cart Drawer */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-slate-900 h-full p-6 flex flex-col justify-between border-l border-slate-800 shadow-2xl">
+          <div className="w-full max-w-md bg-[#0f172a] h-full p-6 flex flex-col justify-between border-l border-slate-800 shadow-2xl">
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <h2 className="text-base font-bold flex items-center gap-2">
@@ -235,7 +287,7 @@ Please confirm my order!`;
               ) : (
                 <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                   {cart.map((item) => (
-                    <div key={item.id} className="bg-slate-800 p-3 rounded-xl flex items-center justify-between gap-3 border border-slate-700">
+                    <div key={item.id} className="bg-slate-800/60 p-3 rounded-xl flex items-center justify-between gap-3 border border-slate-700/50">
                       <img src={item.image_url || item.images?.[0]} alt={item.title} className="w-12 h-12 object-cover rounded-lg" />
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs font-bold text-slate-100 truncate">{item.title}</h4>
@@ -279,7 +331,7 @@ Please confirm my order!`;
       {/* Checkout Modal */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0f172a] border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-sm font-bold text-amber-400">Place Order via WhatsApp</h3>
               <button onClick={() => setSelectedProduct(null)} className="p-1 hover:bg-slate-800 rounded-lg text-slate-400">
@@ -287,7 +339,7 @@ Please confirm my order!`;
               </button>
             </div>
 
-            <div className="flex items-center gap-3 bg-slate-800 p-3 rounded-xl border border-slate-700">
+            <div className="flex items-center gap-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
               <img src={selectedProduct.image_url || selectedProduct.images?.[0]} alt="" className="w-12 h-12 object-cover rounded-lg" />
               <div>
                 <h4 className="text-xs font-bold">{selectedProduct.title}</h4>
@@ -411,7 +463,7 @@ Please confirm my order!`;
       )}
 
       {/* Footer Contact Details */}
-      <footer className="bg-slate-900 border-t border-slate-800 mt-12 py-8 px-6">
+      <footer className="bg-[#0b1326] border-t border-slate-800 mt-12 py-8 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           
           <div className="space-y-3">
